@@ -40,10 +40,8 @@ void dekker (double x, double y, double *r_1, double *r_2) {
 dd dd_mul (dd a, dd b) {
     double s, e;
     dd res;
-    // результат 106 бит, но у double 53
-    // поэтому в e лежит вторая часть пятидесяти трёх бит
+ 
     dekker(a.hm, b.hm, &s, &e);
-    // в e лежит размер ошибки double от истинного значения: a * b
     e += a.lm * b.hm;
     e += a.hm * b.lm;
     // a.lm * b.lm идут после 106 бита, но
