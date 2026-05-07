@@ -44,7 +44,6 @@ dd dd_mul (dd a, dd b) {
     dekker(a.hm, b.hm, &s, &e);
     e += a.lm * b.hm;
     e += a.hm * b.lm;
-    // a.lm * b.lm идут после 106 бита, но
 
     // сложение с упрощением
     res.hm = s + e;
