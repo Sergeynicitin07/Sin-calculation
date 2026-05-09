@@ -27,7 +27,7 @@ dd renormalize (double a0, double a1, double a2) {
     // складываем в t0 числа a0 и s - засунем все, что влезет в 53 бита мантиссы
     // t0 + t1 = a0 + s
     // в t1 биты, что ушли за первые 53 бита
-    fast2Sum (a0, s, &t0, &t1);
+    fast2Sum(a0, s, &t0, &t1);
 
     double b0, b1;
     // за второй шаг t1 мог стать больше, чем половина младшего бита t0
@@ -38,13 +38,12 @@ dd renormalize (double a0, double a1, double a2) {
     return (dd){b0, b1};
 }
 
-
 // так как синус периодическая функция (2 * Пи)
 
 // чтобы не потерять в точности в синусе при вводе больших чисел, сделаем редуцирование - сравнение по пи модулю
 dd reduce (dd x) {
-    double n = round(x.hm / dd_2pi.hm);
-
+    double n = round((x.hm + x.lm) /
+                     (dd_2pi.hm + dd_2pi.lm));
     // умножаемые числа должны быть dd формата
     dd N = {n, 0.0};
     dd ms = dd_mul(N, dd_2pi);
@@ -55,7 +54,8 @@ dd reduce (dd x) {
     double t = -ms.lm;
     dd ms1 = {s, t};
     // x - (ms.hm + ms.lm) = x - ms.hm - ms.lm
-    res = dd_add1(x, ms1);
+    res = dd_add(x, ms1);
     return renormalize(res.hm, res.lm, 0.0);
 
 }
+
