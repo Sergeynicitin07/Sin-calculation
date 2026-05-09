@@ -42,31 +42,17 @@ void is2Sum (double a, double b, double *s, double *t) {
 }
 
 
-dd dd_add1 (dd a, dd b) {
-    double s, e;
-    dd res;
+dd dd_add(dd a, dd b) {
+    double sh, sl, th, tl, c, vh, vl, wh, zh, zl;
 
-    fast2Sum(a.hm, b.hm, &s, &e);
-    // в e лежит размер ошибки double от истинного значения: a + b
-    e += a.lm + b.lm;
+    is2Sum(a.hm, b.hm, &sh, &sl);
+    is2Sum(a.lm, b.lm, &th, &tl);
 
-    res.hm = s + e;
-    res.lm = (s - res.hm) + e;
-    return res;
+    c = sl + th;
+    fast2Sum(sh, c, &vh, &vl);
 
-}
+    wh = tl + vl;
+    fast2Sum(vh, wh, &zh, &zl);
 
-
-dd dd_add2 (dd a, dd b) {
-    double s, e;
-    dd res;
-
-    is2Sum(a.hm, b.hm, &s, &e);
-    // в e лежит размер ошибки double от истинного значения: a + b
-    e += a.lm + b.lm;
-
-    res.hm = s + e;
-    res.lm = (s - res.hm) + e;
-    return res;
-
+    return (dd){zh, zl};
 }
