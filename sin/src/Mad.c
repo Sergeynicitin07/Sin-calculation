@@ -4,6 +4,7 @@
 #include "mul.h"
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 // используем закон fabs(a_i + 1) <= 0.5 ULP(a_i)
 // следующее за первым, второе число должно быть не больше чем одна вторая от значения последнего бита мантиссы с учетом порядка.
 dd renormalize (double a0, double a1, double a2) {
