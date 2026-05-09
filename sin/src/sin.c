@@ -7,7 +7,7 @@
 
 // найдем синус через ряд Тейлора
 dd sinx (dd x) {
-    if (x.hm > dd_pi.hm / 4) {
+    if (fabs(x.hm) > dd_pi.hm / 4) {
         x = reduce(x);
     }
     dd x2 = dd_mul(x, x);
@@ -36,7 +36,7 @@ dd sinx (dd x) {
         elba = renormalize(elba.hm, elba.lm, 0.0);
         co ++;
 
-        res = dd_add1(res, elba);
+        res = dd_add(res, elba);
         res = renormalize(res.hm, res.lm, 0.0);
         if (fabs(elba.hm) < fabs(res.hm) * 1e-32) break;
     }
