@@ -4,6 +4,7 @@
 #include "mul.h"
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 // используем закон fabs(a_i + 1) <= 0.5 ULP(a_i)
 // следующее за первым, второе число должно быть не больше чем одна вторая от значения последнего бита мантиссы с учетом порядка.
@@ -160,7 +161,7 @@ void hg_wells (double* h, double* l) {
             printf(".");
 
             // вывод дробной части
-            for (i = sigma + 1; i < 35; i++) {
+            for (i = sigma + 1; i < 34; i++) {
                 printf("%d", res[i]);
             }
             printf("e+00");
