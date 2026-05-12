@@ -140,7 +140,7 @@ void hg_wells (double* h, double* l) {
         printf(".");
 
         // вывод дробной части
-        for (i = sigma + 1; i < 32; i++) {
+        for (i = sigma + 1; i < sigma + 33; i++) {
             printf("%d", res[i]);
         }
 
@@ -161,7 +161,7 @@ void hg_wells (double* h, double* l) {
             printf(".");
 
             // вывод дробной части
-            for (i = sigma + 1; i < 34; i++) {
+            for (i = sigma + 1; i < 35; i++) {
                 printf("%d", res[i]);
             }
             printf("e+00");
