@@ -62,14 +62,14 @@ dd reduce (dd x) {
 
 
 void hg_wells (double* h, double* l) {
+    int t = 0;
+    char hi[300];
+    char lo[300];
 
-    char hi[100];
-    char lo[100];
+    int res[400] = {0};
 
-    int res[100] = {0};
-
-    sprintf(hi, "%.60f", *h);
-    sprintf(lo, "%.60f", *l);
+    sprintf(hi, "%.290f", *h);
+    sprintf(lo, "%.290f", *l);
 
     // printf("%s\n", hi);
     // printf("%s\n", lo);
@@ -88,7 +88,7 @@ void hg_wells (double* h, double* l) {
     }
 
     int i;
-
+    int aura = 0;
     int sigma = -1;
 
     for (i = 0; hi[i] != '\0'; i++) {
@@ -98,7 +98,7 @@ void hg_wells (double* h, double* l) {
         }
     }
 
-    int ln = 60;
+    int ln = 290;
 
     int hitchcock = 0;
 
@@ -133,17 +133,60 @@ void hg_wells (double* h, double* l) {
     if (sign_hi == -1)
         printf("-");
 
-    if (hitchcock > 0)
+    int j;
+    if (hitchcock > 0) {
         printf("1");
-    else
-        printf("%d", res[0]);
+        printf(".");
 
-    printf(".");
+        // вывод дробной части
+        for (i = sigma + 1; i < 32; i++) {
+            printf("%d", res[i]);
+        }
 
-    // вывод дробной части
-    for (i = sigma + 1; i < 35; i++) {
-        printf("%d", res[i]);
-    }
+        printf("e+00");
+    } else {
+        int can_you_hope_me_please = 0;
+        for (i = 2; i < 250; i ++) {
+            if (res[i] == 0) {
+                t --;
 
-    printf("\n");
+            } else {
+                can_you_hope_me_please = i;
+                break;
+            }
+        }
+        if (t < -230) {
+            printf("0");
+            printf(".");
+
+            // вывод дробной части
+            for (i = sigma + 1; i < 35; i++) {
+                printf("%d", res[i]);
+            }
+            printf("e+00");
+
+        } else {
+            printf("%d", res[can_you_hope_me_please]);
+            printf(".");
+
+            // вывод дробной части
+            for ( j = can_you_hope_me_please + 1; j < can_you_hope_me_please + 33; j++) {
+                printf("%d", res[j]);
+            }
+            if (abs(t) < 10) {
+                printf("e-0%d", abs(t));
+            } else {
+                printf("e-%d", abs(t));
+
+            }
+        }
+
+
+
+    }printf("\n");
+
+
+
+
+
 }
