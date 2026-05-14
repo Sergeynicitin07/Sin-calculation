@@ -6,6 +6,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+
+double get_time() {
+#ifdef _WIN32
+    static LARGE_INTEGER freq;
+    static int initialized = 0;
+    LARGE_INTEGER now;
+
+    if (!initialized) {
+        QueryPerformanceFrequency(&freq);
+        initialized = 1;
+    }
+
+    QueryPerformanceCounter(&now);
+    return (double)now.QuadPart / freq.QuadPart;
+
+#else
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return now.tv_sec + now.tv_nsec / 1e9;
+#endif
+}
+
 // используем закон fabs(a_i + 1) <= 0.5 ULP(a_i)
 // следующее за первым, второе число должно быть не больше чем одна вторая от значения последнего бита мантиссы с учетом порядка.
 dd renormalize (double a0, double a1, double a2) {
