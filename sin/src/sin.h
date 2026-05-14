@@ -5,7 +5,5 @@
 
 dd sinx (dd x);
 
-dd sinx1 (dd x);
-
 
 #endif //UNTITLED36_SIN_H
