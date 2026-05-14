@@ -8,6 +8,12 @@
 #include <string.h>
 
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <time.h>
+#endif
+
 double get_time() {
 #ifdef _WIN32
     static LARGE_INTEGER freq;
@@ -28,6 +34,7 @@ double get_time() {
     return now.tv_sec + now.tv_nsec / 1e9;
 #endif
 }
+
 
 // используем закон fabs(a_i + 1) <= 0.5 ULP(a_i)
 // следующее за первым, второе число должно быть не больше чем одна вторая от значения последнего бита мантиссы с учетом порядка.
