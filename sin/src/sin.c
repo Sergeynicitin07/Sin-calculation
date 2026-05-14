@@ -4,9 +4,15 @@
 #include "Mad.h"
 #include "mul.h"
 #include "Add.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-// найдем синус через ряд Тейлора
-dd sinx (dd x) {
+// синус через ряд Тейлора
+dd dd_neg(dd a) {
+    return (dd){-a.hm, -a.lm};
+}
+
+dd sinx1 (dd x) {
     if (fabs(x.hm) > dd_pi.hm / 4) {
         x = reduce(x);
     }
@@ -41,4 +47,180 @@ dd sinx (dd x) {
         if (fabs(elba.hm) < fabs(res.hm) * 1e-32) break;
     }
     return res;
+}
+
+
+dd dd_reduce(dd x, int *Amouranth, int *t) {
+    double time_limit1 = 5.0;
+    double start = get_time();
+    int supremus = 0;
+    if (fabs(x.hm)> 0.7853981633974483 && fabs(x.hm) < 1e6 + 1e5) {
+        *t = 1;
+        return sinx1(x);
+
+    }
+
+    double k = round(x.hm * inv_pi[0]);
+    k += round(x.hm * inv_pi[1] + x.lm * inv_pi[0]);
+
+    double k_high = floor(k * 1e-9) * 1e9;
+    double k_low = k - k_high;
+
+    dd r = x;
+    double parts_k[] = {k_high, k_low};
+    for(int i = 0; i < 2; i++) {
+        for(int j = 0; j < 4; j++) {
+            dd term = dd_mul((dd){parts_k[i], 0}, (dd){p[j], 0});
+            r = dd_add(r, dd_neg(term));
+
+        }
+    }
+
+    double q = fmod(k, 4.0);
+    if (q < 0) q += 4.0;
+    *Amouranth = (int)q;
+
+    // Коррекция если r не лежит в интервале [-pi/4, pi/4]
+    while (r.hm > 0.7853981633974483) {
+        double elapsed = get_time() - start;
+        if (elapsed > time_limit1) {
+            printf("Time\tis\tover\n");
+            supremus = 1;
+        }
+        if (supremus) {
+            printf("We\tshould\tstop\tall.\n");
+            exit(0);
+        }
+
+        r = dd_add(r, dd_neg((dd){p[0], p[1]}));
+        *Amouranth = (*Amouranth + 1) % 4;
+    }
+    while (r.hm < -0.7853981633974483) {
+        double elapsed = get_time() - start;
+        if (elapsed > time_limit1) {
+            printf("Time\tis\tover\n");
+            supremus = 1;
+        }
+        if (supremus) {
+            printf("We\tshould\tstop\tall.\n");
+            exit(0);
+        }
+
+        r = dd_add(r, (dd){p[0], p[1]});
+        *Amouranth = (*Amouranth + 3) % 4;
+    }
+
+    return r;
+}
+
+
+
+
+dd cos_taylor(dd x) {
+
+    if (x.hm == 0.0) return (dd){1.0, 0.0};
+
+
+    dd x2 = dd_mul(x, x);
+    dd res = (dd){1.0, 0.0};
+    dd p = (dd){1.0, 0.0};
+    dd term;
+
+    int sign = -1;
+    for (int i = 0; i < 15; i++) {
+        p = dd_mul(p, x2);
+
+
+        term = dd_mul(p, factorial_even[i]);
+
+        if (sign < 0) {
+            res = dd_add(res, (dd){-term.hm, -term.lm});
+        } else {
+            res = dd_add(res, term);
+        }
+
+        // Условие выхода по точности
+        if (fabs(term.hm) < fabs(res.hm) * 1e-32) {
+            break;
+        }
+
+        sign = -sign;
+    }
+
+    return res;
+}
+
+dd sin_taylor(dd x) {
+    double time_limit1 = 5.0;
+    double start = get_time();
+
+    if (x.hm == 0.0) return x;
+
+    dd x2 = dd_mul(x, x);
+    dd res = x;
+    dd p = x;
+    dd term;
+
+    int sign = -1;
+    int supremus = 0;
+    double elapsed = get_time() - start;
+    if (elapsed > time_limit1) {
+        printf("Time\tis\tover\n");
+        supremus = 1;
+    }
+    if (supremus) {
+        printf("We\tshould\tstop\tall.\n");
+        exit(0);
+    }
+    for (int i = 0; i < 15; i++) {
+        p = dd_mul(p, x2);
+
+        term = dd_mul(p, factorial_sarmat[i]);
+
+        if (sign < 0) {
+            res = dd_add(res, dd_neg(term));
+        } else {
+            res = dd_add(res, term);
+        }
+
+        if (fabs(term.hm) < fabs(res.hm) * 1e-32) {
+            break;
+        }
+
+        sign = -sign;
+    }
+
+    return res;
+}
+
+
+
+dd sinx(dd a) {
+    int t = 0;
+    int negate = 0;
+    if (a.hm < 0.0) {
+        a = dd_neg(a);
+        negate = 1;
+    }
+    int Amouranth;
+    dd r = dd_reduce(a, &Amouranth, &t);
+    dd res;
+    if (t == 1)
+        return r;
+    switch (Amouranth) {
+        case 0:
+            res = sin_taylor(r);
+            break;
+        case 1:
+            res = cos_taylor(r);
+            break;
+        case 2:
+            res = dd_neg(sin_taylor(r));
+            break;
+        case 3:
+            res = dd_neg(cos_taylor(r));
+            break;
+    }
+
+    return negate ? dd_neg(res) : res;
 }
