@@ -49,12 +49,12 @@ dd sin_taylor(dd x) {
 
 
 
-dd dd_reduce(dd x, int *Amouranth) {
+dd dd_reduce(dd x, int *demetre) {
     double time_limit1 = 5.0;
     double start = get_time();
     int supremus = 0;
     if (fabs(x.hm)> 0.7853981633974483 && fabs(x.hm) < 1e6 + 1e5) {
-        *Amouranth = 0;
+        *demetre = 0;
         return reduce(x);
 
     }
@@ -77,7 +77,7 @@ dd dd_reduce(dd x, int *Amouranth) {
 
     double q = fmod(k, 4.0);
     if (q < 0) q += 4.0;
-    *Amouranth = (int)q;
+    *demetre = (int)q;
 
     // Коррекция если r не лежит в интервале [-pi/4, pi/4]
     while (r.hm > 0.7853981633974483) {
@@ -92,7 +92,7 @@ dd dd_reduce(dd x, int *Amouranth) {
         }
 
         r = dd_add(r, dd_neg((dd){p[0], p[1]}));
-        *Amouranth = (*Amouranth + 1) % 4;
+        *demetre = (*demetre + 1) % 4;
     }
     while (r.hm < -0.7853981633974483) {
         double elapsed = get_time() - start;
@@ -106,7 +106,7 @@ dd dd_reduce(dd x, int *Amouranth) {
         }
 
         r = dd_add(r, (dd){p[0], p[1]});
-        *Amouranth = (*Amouranth + 3) % 4;
+        *demetre = (*demetre + 3) % 4;
     }
 
     return r;
@@ -155,10 +155,10 @@ dd sinx(dd a) {
         a = dd_neg(a);
         negate = 1;
     }
-    int Amouranth;
-    dd r = dd_reduce(a, &Amouranth);
+    int demetre;
+    dd r = dd_reduce(a, &demetre);
     dd res;
-    switch (Amouranth) {
+    switch (demetre) {
         case 0:
             res = sin_taylor(r);
             break;
