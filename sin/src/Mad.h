@@ -3,6 +3,9 @@
 #include "struct.h"
 
 
+double get_time();
+
+
 dd renormalize (double a0, double a1, double a2);
 
 
